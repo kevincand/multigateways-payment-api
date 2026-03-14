@@ -1,6 +1,5 @@
 import Gateway from '#models/gateway'
-import GatewayMock1 from './gateways/GatewayMock1.js'
-import GatewayMock2 from './gateways/GatewayMock2.js'
+import { GatewayRegistry } from './gateways/GatewayRegistry.js'
 
 export default class GatewayManager {
 
@@ -13,15 +12,13 @@ export default class GatewayManager {
 
     return gateways.map((gateway) => {
 
-      if (gateway.name === 'GatewayMock1') {
-        return new GatewayMock1()
+      const GatewayClass = GatewayRegistry[gateway.name as keyof typeof GatewayRegistry]
+
+      if (!GatewayClass) {
+        throw new Error(`Gateway ${gateway.name} not implemented`)
       }
 
-      if (gateway.name === 'GatewayMock2') {
-        return new GatewayMock2()
-      }
-
-      throw new Error('Gateway not implemented')
+      return new GatewayClass()
     })
   }
 
